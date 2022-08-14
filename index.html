@@ -7,12 +7,16 @@
         </head>
         
         <body>
+            <!-- Primary Game Canvas -->
             <canvas id="canvasMain" width="640" height="360"></canvas>
-            
+            <!-- Canvas for displaying pixel reconstruction -->
+            <canvas id="compileIMG" width="40" height="40" style="visibility: visible;"></canvas>
+            <canvas id="canvasConsole" width="600" height="60" style="visibility: visible;"></canvas>
+
             <script src="src/lib/kontra.js"></script>
             <script src="src/main.js"></script>
-            <script src="src/pix.js"></script>
-            <script src="src/tools.js"></script>
+            <script src="src/px.js"></script>
+            <script src="src/utilities.js"></script>
             <script src="src/ui.js"></script>
         </body>
 </html>
