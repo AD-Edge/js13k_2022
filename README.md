@@ -1,2 +1,2 @@
 # js13k_2022
-Repo for my js13k entry [2022]
+Repository for my 2022 #js13k game entry - PROTOSTELLAR (working title)
