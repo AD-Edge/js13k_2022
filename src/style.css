@@ -1,11 +1,16 @@
-.canvas_image {
-    left: 10px;
-    position: absolute;
-    top: 400px;
-    background-color: #111111;
+html {
+    height: 100%;
 }
 
-canvas { 
-    background-color: #333333;
-    border: 1px solid black;
+body {
+    margin: 10;
+    min-height: 100%;
+    overflow: hidden;
+    background-color: #111111;    
+}
+
+#canvasMain { 
+    background-color: #333333;    
+    outline: 4px solid #222222; 
+    outline-offset: -4px;
 }

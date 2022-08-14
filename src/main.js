@@ -22,11 +22,36 @@ stateInit = false;
 preSetup = false;
 initProcessing = false;
 
+load = null;
+
 /////////////////////////////////////////////////////
 //GAME FUNCTIONS
 /////////////////////////////////////////////////////
+function Loading() {
+    load = Text({
+        x: 6,
+        y:10,
+        text: 'Loading...',
+        color: '#FFFFFF',
+        font: '16px Calibri, bold, sans-serif'
+    });
+}
 
+//do preloading setup here
+function InitPreLoad() {
 
+}
+
+//init setup state
+function InitSetupState() {
+
+}
+
+function DrawMenuPanel() {
+    ctx.beginPath();
+    ctx.rect(20, 20, 150, 100);
+    ctx.stroke();
+}
 
 /////////////////////////////////////////////////////
 //PRIMARY GAME LOOP
@@ -34,9 +59,39 @@ initProcessing = false;
 const loop = GameLoop({
     update: () => {
 
-    },
-    render: () => {
+        //Update States
+        if(gameState == 0) { //START MENU 
+            //kickoff first
+            if(!initProcessing && !preSetup) {
+                Loading();
+                InitPreLoad();
+                preSetup = true;
+                //calls all process functions for graphics
+            }
+            if(!initProcessing && preSetup) {
                 
+            }
+
+        }else if (gameState == 1) { //GAME
+            if(!stateInit) {
+                //console.log("Setup state init");
+                InitSetupState();
+                stateInit = true;
+            }
+        }
+
+    },
+
+
+    render: () => {
+        //Render States
+        if(gameState == 0) { //START MENU
+            if(load) {
+                load.render();
+            }
+        } else if (gameState == 1) { //GAME
+
+        }
     }
 });
 
@@ -46,21 +101,25 @@ loop.start();
 /////////////////////////////////////////////////////
 //BUTTONS/INPUT
 ////////////////////////////////////////////////////
-bindKeys(['left', 'a', 'q'], function(e) {
-    document.getElementById("left").click();
-}, 'keyup');
+// bindKeys(['left', 'a', 'q'], function(e) {
+//     console.log("left button");
+//     //document.getElementById("left").click();
+// }, 'keyup');
 
-bindKeys(['right', 'd', 'd'], function(e) {
-    document.getElementById("right").click();
-}, 'keyup');
+// bindKeys(['right', 'd', 'd'], function(e) {
+//     console.log("right button");
+//     document.getElementById("right").click();
+// }, 'keyup');
 
-bindKeys(['up', 'w', 'z'], function(e) {
-    document.getElementById("up").click();
-}, 'keyup');
+// bindKeys(['up', 'w', 'z'], function(e) {
+//     console.log("up button");
+//     document.getElementById("up").click();
+// }, 'keyup');
 
-bindKeys(['down', 's'], function(e) {
-    document.getElementById("down").click();
-}, 'keyup');
+// bindKeys(['down', 's'], function(e) {
+//     console.log("down button");
+//     document.getElementById("down").click();
+// }, 'keyup');
 
 
 /////////////////////////////////////////////////////
