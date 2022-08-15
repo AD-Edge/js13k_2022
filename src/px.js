@@ -38,5 +38,10 @@ const px = [
     "3,5,F7,92", //9 35    
     "7,6,7D,FE,4F,F7,CA,80", //36 skull  
     "10,10,7F,BF,FE,F,1,C0,70,1C,7,83,71,CF,E0", //37 helmet
-
+    "9,9,7F,BF,FF,FF,FF,87,DC,E,FF,7F,80", //38 body
+    "4,14,13,30,66,EE,CC,C0,C8", //39 arm right
+    "3,13,48,6D,9B,6C,32", //40 arm left
+    "4,14,77,77,7F,EE,EE,E,F0", //41 leg
+    "12,12,3F,C4,2,86,18,61,86,18,1,86,14,2,33,C0,A0,6,0,0", //42 speach bubble
+    "10,10,8,1F,CF,FA,E,83,A0,DF,EC,7,FF,BF,C0", //43 computer
 ];

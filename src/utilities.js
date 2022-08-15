@@ -7,20 +7,9 @@ var blobArr = [];
 //sprite array
 sprArr = [];
 
+var output = document.getElementById("h3");
 const mimeType = 'image/png';
 var currentArray = 0;
-
-var output = document.getElementById("h3");
-
-// var intPaused = false;
-// var timer = 0;
-// var t = setInterval(function() {
-//     if(!intPaused) {
-//         timer++;
-//         //output.innerText = "Seconds: " + time;
-//         output.innerText = "Sprites processed: " + currentArray;
-//     }
-// }, 1000);
 
 var prepInterval = null;
 var iInc = 0;
@@ -135,7 +124,7 @@ function DrawToCvs(binaryData, color) {
 //Used for quick and easy colour switching for certain images
 function SelectColor(num) {
     return (
-     num == 0 ? ('#FFFFFFCC') //isogrid outline
+     num == 0 ? ('#FFFFFFFF') //isogrid outline
     :num == 1 ? ('#FFFFFF99') //isogrid fill
     :num == 2 ? ('#0088FF') //isogrid fill
     :num == 3 ? ('#880000') //isogrid fill
@@ -143,7 +132,6 @@ function SelectColor(num) {
     : null
     );
 }
-
 
 //First step in converting renderImage canvas to image data/compressed
 function CvstoImData(i) {
@@ -196,7 +184,6 @@ function GenerateSpriteArray() {
     sceneChange = 1;
 
 }
-
 
 
 /////////////////////////////////////////////////////
