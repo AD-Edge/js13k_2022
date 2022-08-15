@@ -7,11 +7,15 @@
         </head>
         
         <body>
-            <!-- Primary Game Canvas -->
-            <canvas id="canvasMain" width="640" height="360"></canvas>
-            <!-- Canvas for displaying pixel reconstruction -->
-            <canvas id="compileIMG" width="40" height="40" style="visibility: visible;"></canvas>
-            <canvas id="canvasConsole" width="600" height="60" style="visibility: visible;"></canvas>
+            <div id="container" style="width: 640px; height: 420px">
+
+                <!-- Primary Game Canvas -->
+                <canvas id="canvasMain" width="640" height="360"></canvas>
+                <!-- Canvas for displaying pixel reconstruction -->
+                <canvas id="compileIMG" width="40" height="40" style="visibility: visible;"></canvas>
+                <canvas id="canvasConsole" width="600" height="60" style="visibility: visible;"></canvas>
+
+            </div>
 
             <script src="src/lib/kontra.js"></script>
             <script src="src/main.js"></script>

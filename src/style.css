@@ -11,6 +11,7 @@ body {
 
 #canvasMain { 
     z-index: 6;
+    visibility: visible;
     background-color: #333333;    
     outline: 4px solid #222222; 
     outline-offset: -4px;
@@ -32,4 +33,9 @@ body {
     outline-offset: -4px;
     /* outline: 4px solid #222222; 
     outline-offset: -4px; */
+}
+
+#container { 
+    background-color: aquamarine;
+    visibility: hidden;
 }
