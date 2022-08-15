@@ -87,7 +87,7 @@ function InitSetupState() {
         color: '#555'
       });
 
-    var playerSprite = sprArr[10];
+    var playerSprite = sprArr[36];
     playerSprite.width=28;
     playerSprite.height=24;
 
@@ -123,7 +123,7 @@ const loop = GameLoop({
             //kickoff first
             if(!initProcessing && !preSetup) {
                 Loading();
-                prepInterval = setInterval(InitPreLoad, 250);
+                prepInterval = setInterval(InitPreLoad, 25);
                 preSetup = true; //presetup running
                 //InitPreLoad();
                 //calls all process functions for graphics
@@ -176,7 +176,6 @@ const loop = GameLoop({
 });
 
 loop.start();
-
 
 /////////////////////////////////////////////////////
 //BUTTONS/INPUT

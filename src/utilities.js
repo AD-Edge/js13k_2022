@@ -51,12 +51,12 @@ function InitPreLoad() {
 //Decompiles sprite data (HEX compress)
 function DecomSpr(data) {
 
-    console.log("Decompiling sprite data: [" + data + "]");
+    //console.log("Decompiling sprite data: [" + data + "]");
     sD = data.split(",");
 
     //get dimensions 
     w = sD[0]; h = sD[1];
-    console.log("Sprite width: " + w + ", height: " + h);
+    //console.log("Sprite width: " + w + ", height: " + h);
 
     bin = [];
     binaryData = [];
@@ -65,7 +65,7 @@ function DecomSpr(data) {
     for(var i=2; i< sD.length; i++) {
         hex = hexToBinary(sD[i]);
         bin[bin.length] = hex;
-        console.log("Hex to Binary: " + hex);
+        //console.log("Hex to Binary: " + hex);
     }
 
     //convert each binary number into binaryData
@@ -85,9 +85,8 @@ function DecomSpr(data) {
     //for now just return black colour
     var color = SelectColor(0);
     
-    console.log("Hex to binary conversion complete, drawing to canvas...");
-    //console.log("binary data array size: " + binaryData.length);
-    
+    //console.log("Hex to binary conversion complete, drawing to canvas...");
+
     //reset canvas and draw
     //* by some kind of size if needed? just to visualize
     compCanvas.width = w * scale; 
@@ -104,7 +103,7 @@ function DrawToCvs(binaryData, color) {
     //colour from register
     if(color) {
         compCTX.fillStyle = color;
-        console.log("Custom fill style: " + color);
+        //console.log("Custom fill style: " + color);
     } else { //default to white
         compCTX.fillStyle = cR[0];
     }
@@ -129,7 +128,7 @@ function DrawToCvs(binaryData, color) {
         currY += scale;
         currX += scale;
     }
-    console.log('Rendered sprite ' + iInc + ', at ' +  scale + 'x scale');
+    //console.log('Rendered sprite ' + iInc + ', at ' +  scale + 'x scale');
 }
 
 //Todo - replace with register list of colours (import or presetup)
