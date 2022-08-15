@@ -24,7 +24,7 @@ var output = document.getElementById("h3");
 
 var prepInterval = null;
 var iInc = 0;
-var scale = 10;
+var scale = 4;
 
 //Preloading setup here
 function InitPreLoad() {
@@ -92,8 +92,8 @@ function DecomSpr(data) {
     compCanvas.width = w * scale; 
     compCanvas.height = h * scale;
 
-    consCanvas.width = 640 - 8 - compCanvas.width;
-    consCanvas.height = compCanvas.height;
+    consCanvas.width = 640 - 18 - compCanvas.width;
+    consCanvas.height = compCanvas.height + 8;
 
     DrawToCvs(binaryData, color);
 }
