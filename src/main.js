@@ -40,7 +40,7 @@ timer = 0;
 //Player
 pX = 110;
 pY = 180;
-var zPlayer, zShip, sBody, sArmL, sArmR, sLegL, sLegR = null;
+var zPlayer, zShip, zProbe, sBody, sArmL, sArmR, sLegL, sLegR = null;
 var sComp1, sComp2, sStnd1, sStnd2, sBub1, sBub2 = null;
 var sConsole, sCon1, sCon2, sExc = null;
 
@@ -138,6 +138,7 @@ function InitSetupState() {
     //Player Sprites
     zPlayer = CreateSpriteObj(37, 0.4, pX, pY);
     zShip = CreateSpriteObj(48, 0.4, pX, pY);
+    zProbe = CreateSpriteObj(49, 0.3, 50, 50);
 
     sBody = CreateSpriteObj(38, 0.4, pX, pY);
     sArmR = CreateSpriteObj(39, 0.4, pX, pY);
@@ -179,13 +180,11 @@ function CreateMenuPanel() {
 }
 
 function CreateSpriteObj(sNum, scale, offX, offY) {   
-    
-    
     const tempSprite = sprArr[sNum];
     tempSprite.width *= scale;
     tempSprite.height *= scale;
 
-    console.log("tempSprite '" + sNum + "' width: " + tempSprite.width);
+    //console.log("tempSprite '" + sNum + "' width: " + tempSprite.width);
 
     const gameObj = Sprite({
         x: offX,
@@ -327,7 +326,7 @@ const loop = GameLoop({
                 load.text = " Pre-setup complete, loading game...";
             }
 
-        }else if (gameState == 1) { //GAME
+        }else if (gameState == 1) { //GAME [SHIP INTERIOR]
             if(!stateInit) {
                 //console.log("Setup state init");
                 InitSetupState();
@@ -387,11 +386,12 @@ const loop = GameLoop({
                 sLegL.x = pX+2;
                 sLegL.y = pY+36;
             }
-        } else if(gameState == 2) {
+        } else if(gameState == 2) { //GAME [Ship Combat]
             if(zShip != null) {
                 zShip.x = pX;
                 zShip.y = pY;
             }
+            zProbe.render();
         }
 
     },
@@ -454,7 +454,10 @@ const loop = GameLoop({
 
             if(zShip) {
                 zShip.render();
+                zProbe.render();
             }
+
+
         }
     }
 });
@@ -505,3 +508,25 @@ onKey(['e'], function(e) {
 /////////////////////////////////////////////////////
 //MUSIC
 /////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////
+//Render Queue
+/////////////////////////////////////////////////////
+let rQ = { ui: [], bg: [], sp: [] };
+//UI Objects
+function AddRQ_UI(obj) {
+    rQ.ui.push({obj}); }
+//Background Objects
+function AddRQ_BG(obj) {
+    rQ.bg.push({obj}); }
+//Sprite Objects
+function AddRQ_SP(obj) {
+    rQ.sp.push({obj}); }
+//Clear all render queues
+function ClearRQ() {
+    rQ.ui.length = 0; rQ.ui = [];
+    rQ.bg.length = 0; rQ.bg = [];
+    rQ.sp.length = 0; rQ.sp = []; }
+//Clear just sprite render queue
+function ClearRQ_SP() {
+    rQ.sp.length = 0; rQ.sp = []; }
