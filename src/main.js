@@ -5,8 +5,15 @@
 ////////////////////////////////////////////////////
 //INITILIZATIONS
 ////////////////////////////////////////////////////
-const { init, GameLoop, Scene, GameObject, Button, 
-    Sprite, initPointer, initKeys, track, onKey, Text } = kontra;
+//enabled for roller
+// import { 
+//     kontra
+// } from './kontra.js';
+
+// const { init, GameLoop, Scene, GameObject, Button, 
+//     Sprite, initPointer, initKeys, track, onKey, Text } = kontra;
+const { init, initPointer, GameLoop, Sprite, 
+    initKeys, onKey, Text, Button } = kontra;
 
 const { canvas, context } = init();
 
@@ -15,9 +22,8 @@ consCanvas = document.getElementById('canvasConsole');
 compCTX = compCanvas.getContext("2d");
 cosCTX = consCanvas.getContext("2d");
 
-initPointer();
 initKeys();
-kontra.initKeys();
+initPointer();
 
 //Primary Game State
 //0 = Start screen/zone
@@ -34,20 +40,22 @@ timer = 0;
 //Player
 pX = 110;
 pY = 180;
-var zPlayer = null;
-var sBody = null;
-var sArmL = null;
-var sArmR = null;
-var sLegL = null;
-var sLegR = null;
+var zPlayer, zShip, sBody, sArmL, sArmR, sLegL, sLegR = null;
+var sComp1, sComp2, sStnd1, sStnd2, sBub1, sBub2 = null;
+var sConsole, sCon1, sCon2, sExc = null;
 
-var sComp1 = null;
-var sComp2 = null;
-var sBub1 = null;
-var sBub2 = null;
+var tutText = Text({
+    x: 130,
+    y: 60,
+    text: ' ... ',
+    color: '#FFFFFF',
+    font: '14px Calibri, bold, sans-serif'
+});
 
 //Menu
 panelRight = null;
+panelScan = null;
+commandButton = null;
 
 //colour registers
 cREG = ["#FFF", "#000", "", "", "", "", ""]
@@ -59,6 +67,7 @@ d2 = ">Press F to interact with the module [REPAIR]";
 d3 = "Great! That should be operational again ...";
 d4 = "Now lets get that other one fixed up too.";
 d5 = "** EMERGENCY ALARM **           ";
+d6 = "EMERGENCY COMS RECIEVED: tldr bad stuff ";
 
 /////////////////////////////////////////////////////
 //GAME FUNCTIONS
@@ -103,125 +112,135 @@ function InitSetupState() {
         height: 1000,
         color: '#555'
       });
+    panelScan = Sprite({
+        x: 530,
+        y: 95,
+        anchor: {x: 0.5, y: 0.5},
+        // required for a rectangle sprite
+        width: 180,
+        height: 150,
+        color: '#AAA'
+      });
+    commandButton = Button({
+        x: 380, y:-50,
+        color: '#777',
+        width: 40,
+        height: 40,
+        onDown() {
+            this.color = '#38C';
+            SwitchCommand();
+        },
+        onUp() { this.color = '#777'; },
+        onOver() { this.color = '#CCC'},
+        onOut: function() { this.color = '#777';}
+    });
 
-    //TODO - optimise these next processes
-    var playerSprite = sprArr[37];
-    playerSprite.width *= 0.33;
-    playerSprite.height *= 0.33;
-    var bodySprite = sprArr[38];
-    bodySprite.width *= 0.33;
-    bodySprite.height *= 0.33;
-    var armRSprite = sprArr[39];
-    armRSprite.width *= 0.33;
-    armRSprite.height *= 0.33;
-    var armLSprite = sprArr[40];
-    armLSprite.width *= 0.33;
-    armLSprite.height *= 0.33;
-    var legSprite = sprArr[41];
-    legSprite.width *= 0.33;
-    legSprite.height *= 0.33;
+    //Player Sprites
+    zPlayer = CreateSpriteObj(37, 0.4, pX, pY);
+    zShip = CreateSpriteObj(48, 0.4, pX, pY);
+
+    sBody = CreateSpriteObj(38, 0.4, pX, pY);
+    sArmR = CreateSpriteObj(39, 0.4, pX, pY);
+    sArmL = CreateSpriteObj(40, 0.4, pX, pY);
+    sLegR = CreateSpriteObj(41, 0.6, pX, pY);
+    sLegL = CreateSpriteObj(41, 0.6, pX, pY);
     
-    var bubSprite = sprArr[42]
-    bubSprite.width *= 0.6;
-    bubSprite.height *= 0.6;
-    var compSprite = sprArr[43]
-    compSprite.width *= 0.6;
-    compSprite.height *= 0.6;
-
-    zPlayer = Sprite({
-        x: pX,
-        y: pY,
-        //color: 'white',
-        image:playerSprite,
-    });
-    sBody = Sprite({
-        x: pX,
-        y: pY+14,
-        //color: 'white',
-        image:bodySprite,
-    });
-    sArmR = Sprite({
-        x: pX-6,
-        y: pY+12,
-        //color: 'white',
-        image:armRSprite,
-    });
-    sArmL = Sprite({
-        x: pX+14,
-        y: pY+12,
-        //color: 'white',
-        image:armLSprite,
-    });
-    sLegR = Sprite({
-        x: pX+6,
-        y: pY+26,
-        //color: 'white',
-        image:legSprite,
-    });
-    sLegL = Sprite({
-        x: pX,
-        y: pY+26,
-        //color: 'white',
-        image:legSprite,
-    });
-
-    sComp1 = Sprite({
-        x: 190,
-        y: 150,
-        //color: 'white',
-        image:compSprite,
-    });
-    sComp2 = Sprite({
-        x: 75,
-        y: 200,
-        //color: 'white',
-        image:compSprite,
-    });
-    sBub1 = Sprite({
-        x: 185,
-        y: 120,
-        //color: 'white',
-        image:bubSprite,
-    });
-    sBub2 = Sprite({
-        x: 70,
-        y: 170,
-        //color: 'white',
-        image:bubSprite,
-    });
-
+    //Object Sprites
+    sComp1 = CreateSpriteObj(50, 0.82, 190, 150);
+    sComp2 = CreateSpriteObj(50, 0.82, 75, 200);
+    sStnd1 = CreateSpriteObj(43, 0.82, 75, 224);
+    sStnd2 = CreateSpriteObj(43, 0.82, 190, 174);
+    sBub1 = CreateSpriteObj(42, 0.75, 182, 120);
+    sBub2 = CreateSpriteObj(42, 0.75, 70, 170);
+    
+    //main console
+    sConsole = CreateSpriteObj(44, 0.55, 30, 120);
+    sCon1 = CreateSpriteObj(45, 0.55, 22, 144);
+    sCon2 = CreateSpriteObj(46, 0.55, 62, 125);
+    //TODO - add chunks/parent objects, etc
     //chunk0.addChild(cPlayer);
 
 }
 
-function CreateSpriteObj(obj, sprite, scale) {   
+function SwitchCommand() {
+    console.log("command window switched");
+    stateInit = true;
+    sceneChange = 2;
+
+    pX = 190;
+    pY = 180;
+
+    load.text = " [Game Running: SHIP COMMAND]";
+    tutText.text = " <Instructions for ship scanning>";
+}
+
+function CreateMenuPanel() {
+
+}
+
+function CreateSpriteObj(sNum, scale, offX, offY) {   
+    
+    
+    const tempSprite = sprArr[sNum];
+    tempSprite.width *= scale;
+    tempSprite.height *= scale;
+
+    console.log("tempSprite '" + sNum + "' width: " + tempSprite.width);
+
+    const gameObj = Sprite({
+        x: offX,
+        y: offY,
+        image:tempSprite,
+    });
+
+    return gameObj;
+
 }
 
 function InteractCheck(ltr) {
     //Next dialogue prompt/Interact/Access
     if(ltr === 'e' && d_t == 0) {
-        if(dState == 0) {
+        if(dState == 0) { //press F to fix
             //console.log("moving to next bit of dialogue");
             cosCTX.clearRect( 0, 0, consCanvas.width, consCanvas.height);
             dState = 1;
             intervalD_R = false;
         }
-        if(dState == 2) {
+        else if(dState == 2) { //now lets fix the other one
             SavePlayerPos();
             cosCTX.clearRect( 0, 0, consCanvas.width, consCanvas.height);
             dState = 3;
             intervalD_R = false;
         }
+        else if(dState == 5) { //tutorial text 01
+            //disTut01 = true;
+            PrintTutorialText(1);
+        }
+
+    }
+    if(ltr === 'e' && dState == 4) { //print ermergency coms uwu
+        d_t = 0;
+        cosCTX.clearRect( 0, 0, consCanvas.width, consCanvas.height);
+        dState = 5;
+        intervalD_R = false;
     }
     
     //Alt interact/FIX
     if(ltr === 'f' && d_t == 0) {
-        if(dState == 1) {
+        if(dState == 1) { //print fixed! 
             //console.log("fix");
             cosCTX.clearRect( 0, 0, consCanvas.width, consCanvas.height);
             dState = 2;
             intervalD_R = false;
         }
+    }
+
+}
+
+function PrintTutorialText(num) {
+    if(num == 1) {
+        tutText.text = "Toggle to ship command when at a core console ^";
+        commandButton.y = 10;
     }
 
 }
@@ -299,6 +318,9 @@ const loop = GameLoop({
                 preSetup = true; //presetup running
                 //InitPreLoad();
                 //calls all process functions for graphics
+                //stop console or ctx being removed by roller
+                // console.log(canvas);
+                // console.log(context);
             }
             //presetup complete, initial processing complete
             if(initProcessing && preSetup) {
@@ -312,21 +334,28 @@ const loop = GameLoop({
                 stateInit = true;
                 
                 load.text = " [Game Running: SHIP INTERIOR]";
-
             }
-
 
             if(dState == 0 && !intervalD_R) {
                 intervalD = setInterval(PrintDialogue(d1), 2000);
             }
-            if(dState == 1 && !intervalD_R) {
+            else if(dState == 1 && !intervalD_R) {
                 intervalD = setInterval(PrintDialogue(d2), 2000);
             }
-            if(dState == 2 && !intervalD_R) {
+            else if(dState == 2 && !intervalD_R) {
                 intervalD = setInterval(PrintDialogue(d3), 2000);
             }
-            if(dState == 3 && !intervalD_R) {
+            else if(dState == 3 && !intervalD_R) {
                 intervalD = setInterval(PrintDialogue(d4), 2000);
+            }
+            else if(dState == 4) { // loop emergency coms
+                if(d_t == 0) {
+                    cosCTX.clearRect( 0, 0, consCanvas.width, consCanvas.height);
+                }
+                intervalD = setInterval(PrintDialogue(d5), 5000);
+            }
+            else if(dState == 5 && !intervalD_R) { //emergency message
+                intervalD = setInterval(PrintDialogue(d6), 2000);
             }
 
             if(dState == 3 ) {
@@ -335,16 +364,11 @@ const loop = GameLoop({
                     console.log("player has moved");
                     dState = 4;
                     d_t = 0;
+                    //move bubble
+                    sBub2.x = 30;
+                    sBub2.y = 90;
                 }
             }
-
-            if(dState == 4) {
-                if(d_t == 0) {
-                    cosCTX.clearRect( 0, 0, consCanvas.width, consCanvas.height);
-                }
-                intervalD = setInterval(PrintDialogue(d5), 5000);
-            }
-
 
 
             //update player
@@ -353,15 +377,20 @@ const loop = GameLoop({
                 zPlayer.x = pX;
                 zPlayer.y = pY;
                 sBody.x = pX;
-                sBody.y = pY+14;
-                sArmR.x = pX-6;
-                sArmR.y = pY+12;
-                sArmL.x = pX+14;
-                sArmL.y = pY+12;
-                sLegR.x = pX+6;
-                sLegR.y = pY+26;
-                sLegL.x = pX;
-                sLegL.y = pY+26;
+                sBody.y = pY+19;
+                sArmR.x = pX-7;
+                sArmR.y = pY+14;
+                sArmL.x = pX+16;
+                sArmL.y = pY+14;
+                sLegR.x = pX+10;
+                sLegR.y = pY+36;
+                sLegL.x = pX+2;
+                sLegL.y = pY+36;
+            }
+        } else if(gameState == 2) {
+            if(zShip != null) {
+                zShip.x = pX;
+                zShip.y = pY;
             }
         }
 
@@ -373,24 +402,39 @@ const loop = GameLoop({
         if(load) {
             load.render();
         }
+        if(tutText) {
+            tutText.render();
+        }
 
         if(gameState == 0) { //START MENU
             
         } else if (gameState == 1) { //GAME
             panelRight.render();
 
-
-
             if(zPlayer) {
                 //objects
                 //TODO, setup render queue
                 sComp1.render();
                 sComp2.render();
+                sStnd1.render();
+                sStnd2.render();
                 sBub1.render();
+
+                sConsole.render();
+                sCon1.render();
+                sCon2.render();
 
                 //simple state change for warning bubble
                 if(dState<2) {
                     sBub2.render();
+                }
+                
+                if(dState == 4) {
+                    sBub2.render();
+                }
+
+                if(dState >= 5) {
+                    commandButton.render();
                 }
 
                 //player
@@ -401,6 +445,15 @@ const loop = GameLoop({
                 sArmR.render();
                 sLegL.render();
                 sLegR.render();
+            }
+        } else if (gameState == 2) { //ship command
+            
+            panelRight.render();
+            panelScan.render();
+            commandButton.render();
+
+            if(zShip) {
+                zShip.render();
             }
         }
     }
@@ -414,25 +467,25 @@ loop.start();
 onKey(['left', 'a', 'q'], function(e) {
     //console.log("left button");
     pX -= 14;
-    console.log("DEBUG POS: " + pX + ", " + pY);
+    //console.log("DEBUG POS: " + pX + ", " + pY);
 }, 'keyup');
 
 onKey(['right', 'd', 'd'], function(e) {
     //console.log("right button");
     pX += 14;
-    console.log("DEBUG POS: " + pX + ", " + pY);
+    //console.log("DEBUG POS: " + pX + ", " + pY);
 }, 'keyup');
 
 onKey(['up', 'w', 'z'], function(e) {
     //console.log("up button");
     pY -= 10;
-    console.log("DEBUG POS: " + pX + ", " + pY);
+    //console.log("DEBUG POS: " + pX + ", " + pY);
 }, 'keyup');
 
 onKey(['down', 's'], function(e) {
     //console.log("down button");
     pY += 10;
-    console.log("DEBUG POS: " + pX + ", " + pY);
+    //console.log("DEBUG POS: " + pX + ", " + pY);
 }, 'keyup');
 
 onKey(['f'], function(e) {

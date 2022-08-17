@@ -82,7 +82,7 @@ function DecomSpr(data) {
     compCanvas.height = h * scale;
 
     consCanvas.width = 640 - 18 - compCanvas.width;
-    consCanvas.height = compCanvas.height + 8;
+    //consCanvas.height = compCanvas.height + 8;
 
     DrawToCvs(binaryData, color);
 }
