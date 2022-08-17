@@ -530,3 +530,84 @@ function ClearRQ() {
 //Clear just sprite render queue
 function ClearRQ_SP() {
     rQ.sp.length = 0; rQ.sp = []; }
+
+
+
+//from px.js -> generate into canvas
+//save image (from array) as base 64 data, into image array
+
+
+function getBase64Img() {
+    // return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQBAMAAAB8P++eAAAAMFBMVEX////7+/vr6+vNzc2qqqplywBWrQD/Y5T/JTf+AADmAABeeEQvNydqAAAGBAMAAAGoF14oAAAEBUlEQVR42u2WTUwUVxzA/2925LIojsyqCLtMqSQeFJeFROPHstjdNkZdkaiX9mRTovYgSYNFE43Rg5IeNG5SqyaVcGzXkvTm7hZWq9bKriAYYzSLBI3WAplp0jY2kV3fzPuYGcBxD/bmO0zevPeb//f7v0FQ5EDvwf8LFG89ixYDol9Wo+smKal2sHF6kM6q7qbE5tY03d7SHR6ygiuvwY1txkzIlPaD3NQ4Zryk/PCP1wKibBlI97dq+idXUxqgcEkVnruS/smRpuWaCbrHU5pc/wyTQsata0U77wVBTlRP9UNkT9oE61K9AHL9VERbeTVurMjNm54mqrFw8CwKmWBfpf6V2Dx/TdxN3YjMf2JwIEZ8JnjnEbEjvLAQZ1EKlxkciJ9UcdD1Z5ztDmgsgPIrMkWtMgfd41xOYXZOIjUcLB3tdchypHWIgb5k2gH0nE0zMHjRCRTLWxgY/VQrDuybcAQ/DDEwmwEn8COlSDBcTUE0GXcEjRzqoDDhDH7sfccg2szAt9hogjBFQFRmDyd9N1VTEFegXXKEVKQFJHEUd0DSKhLthIm0HSQpnNdCNizgq147GP0m7QTygNMye6NqM9ekwlG4kLI5I4cMZ+bVhMA8MwX1rw9oIjakAYX6jXlBRRJ4BF6PwmRSfQyLFhJwWy/IG8khKuirljODG0DfGAd3qCBNEol5vCqFAxqYLeUyB0H2A2Q0DspRD3BQfJEc5KBl6KprG6pNEPqqfkKzOQBsha2bQeVw6g3nSySaGYgb99ylhsLDLVYQ3E+oozOGHKzVbCBs+HkuUm6ivd4E0ZYeNTPTTrn51+0wA9TJgpZVLeaV1y+4yS8c64W0/AcFTBCHK/fFEMwFAmo4KRldE0ZxsF8cGbTuzYqHtOz8t6e8TMk5CcjNSC+kdcfgPyag9AoDhUQARmvAcIiAW3v0JzWJg64BJXdBQ21+/b4zwMqRW5dA2h3I7+onYJd+Y4i3FbyMxz4hxE7hS2MBdSq6Fgq6Bny/dxv6Sk76COj6Yz91ZG8dToQ7oYNCqu4QjX9FK5UoPt/PXO701mruhwcxGP2ecahzzxBtUtlzLHclsXtBA6wc+a2brlUc8TCvg5cPM7LiaOPT8Y4ub3bpAbqy+MQ18xRmvIe5nr83YXDt8Nca0/GveWniSHByybEVwx1dD1ccYB/6yF8DTaGcYLFA391o6DjjohaWfKXQ/xCWazmhPDhNbYf2WH4fse9zhRUkLwrXlUD+9iVD5HR77KWheclxkqsZ1bM+pqcWZ2xVe0zXjPb6pyO8IK1l5trcA7mLKuo48+VpQG0BuPmZeTbs9Vi+9oQyqv6Ieyou4FybU+HqRS4o+TH1VG7MvgFFjvfguwFfA4FobmCxcnTPAAAAAElFTkSuQmCC";
+
+    return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAAiCAYAAAC5gzL5AAAAAXNSR0IArs4c6QAAANdJREFUSEvllUsOgCAMROVucGoOhymxZKz9oFEX6k7Ux3Q6xdRaa4u4SilyaXdfa93dJwmJAPw1glyI3JEAvMkURAOwCgL9EUL1XzYWOyBB2H7TWHTdywsD+P2RE63/bmy3zBBQhUSpDWMvPdHUEASVdyW4EKlgs++H5JzHUYAysQxrjlhNmoVoGTlAvKm1AuhCInMxbLTBKAeVzELYt8PJFqUUn4eeSCOt4aP1Xo438jJc2hFhljOrpBur/Xe0llrlPAu5pcVn/DDL+RjkTPTf88Q6qHF9Bd5rPYTJOkQGAAAAAElFTkSuQmCC";
+}
+
+
+var base64img = getBase64Img();
+var base64 = null;
+
+
+function Base64ToImage(base64img, callback) {
+    const img = new Image();
+    img.onload = function() {
+        callback(img);
+    };
+    img.src = base64img;
+    img.id = "testimg";
+
+            
+
+    
+    //and convert back to base 64? 
+    //var base64 = ImageToBase64();
+    //console.log(base64);
+    
+}
+Base64ToImage(base64img, function(img) {
+    document.getElementById('main').appendChild(img);
+    var log = "w=" + img.width + " h=" + img.height;
+    document.getElementById('log').value = log;
+    
+    //test getting that image we have just drawn back to base64
+    base64 = getBase64Image(document.getElementById("testimg"));
+    console.log(base64);
+});
+
+//demo returning image from one embedded in html
+// var img2 = document.getElementById("testimg2");
+// img2.onload = function() {
+//     base64 = getBase64Image(img2);
+//     console.log(base64);
+// }
+
+function getBase64Image(img) {
+    // var canvas = document.createElement("canvas");
+    //var ctx = canvas.getContext("2d");
+    var canvasDraw = document.getElementById("canvasDraw");
+    var dctx = canvasDraw.getContext('2d');
+    canvasDraw.width = img.width;
+    canvasDraw.height = img.height;
+    dctx.drawImage(img, 0, 0);
+    var dataURL = canvasDraw.toDataURL("image/png");
+    return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+  }
+  
+
+
+// can = document.getElementById('main');
+// canctx = can.getContext("2d");
+
+function ImageToBase64() {
+    
+
+    var dataURL = canctx.toDataURL("image/png");
+    return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+}
+
+
+//Data URI ?
+//Method of embedding images and other files in webpages as a string of text, generally using base64 encoding.
+
+//You can use btoa() and atob() to convert to and from base64 encoding.
+
