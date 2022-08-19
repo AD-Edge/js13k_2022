@@ -28,7 +28,7 @@ body {
 #canvasConsole { 
     z-index: 8;
     padding-left: 6px;
-    background-color: #999999;    
+    background-color: #555;    
     outline: 4px solid #222222; 
     outline-offset: -4px;
     /* outline: 4px solid #222222; 
