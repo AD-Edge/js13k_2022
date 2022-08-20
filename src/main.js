@@ -30,6 +30,8 @@ initPointer();
 //1 = Game area
 //2 = Death 
 gameState = 0;
+mapView = false;
+mapEnable = false;
 stateInit = false;
 preSetup = false;
 initProcessing = false;
@@ -43,6 +45,7 @@ pY = 180;
 var zPlayer, zShip, zProbe, sBody, sArmL, sArmR, sLegL, sLegR = null;
 var sComp1, sComp2, sStnd1, sStnd2, sBub1, sBub2 = null;
 var sConsole, sCon1, sCon2, sExc = null;
+//var sMapButton, sCommandButton = null;
 
 var tutText = Text({
     x: 130,
@@ -51,11 +54,27 @@ var tutText = Text({
     color: '#FFFFFF',
     font: '14px Calibri, bold, sans-serif'
 });
+var shipReadout = Text({
+    x: 460,
+    y: 240,
+    text: '[<-W]     [C]     [W->] \n               [E] [B]\n                     [B]',
+    color: '#FFFFFF',
+    font: '16px Calibri, bold, sans-serif'
+});
+var warningText = Text({
+    x: 10,
+    y: 30,
+    text: 'UNKNOWN SHIP: HOSTILE ACTIVITY DETECTED',
+    color: '#FF6666',
+    font: '16px Calibri, bold, sans-serif'
+});
 
 //Menu
 panelRight = null;
 panelScan = null;
+panelShip = null;
 commandButton = null;
+mapButton = null;
 
 //colour registers
 cREG = ["#FFF", "#000", "", "", "", "", ""]
@@ -119,59 +138,96 @@ function InitSetupState() {
         // required for a rectangle sprite
         width: 180,
         height: 150,
-        color: '#AAA'
+        color: '#777'
       });
-    commandButton = Button({
-        x: 380, y:-50,
-        color: '#777',
-        width: 40,
-        height: 40,
-        onDown() {
-            this.color = '#38C';
-            SwitchCommand();
-        },
-        onUp() { this.color = '#777'; },
-        onOver() { this.color = '#CCC'},
-        onOut: function() { this.color = '#777';}
-    });
+    panelShip = Sprite({
+        x: 530,
+        y: 260,
+        anchor: {x: 0.5, y: 0.5},
+        // required for a rectangle sprite
+        width: 180,
+        height: 150,
+        color: '#777'
+      });
 
     //Player Sprites
     zPlayer = CreateSpriteObj(37, 0.4, pX, pY);
-    // zShip = CreateSpriteObj(48, 0.4, pX, pY);
-    // zProbe = CreateSpriteObj(49, 0.3, 50, 50);
+    zShip = CreateSpriteObj(48, 0.4, pX, pY);
+    zProbe = CreateSpriteObj(49, 0.3, 50, 50);
 
-    // sBody = CreateSpriteObj(38, 0.4, pX, pY);
-    // sArmR = CreateSpriteObj(39, 0.4, pX, pY);
-    // sArmL = CreateSpriteObj(40, 0.4, pX, pY);
-    // sLegR = CreateSpriteObj(41, 0.6, pX, pY);
-    // sLegL = CreateSpriteObj(41, 0.6, pX, pY);
+    sBody = CreateSpriteObj(38, 0.4, pX, pY);
+    sArmR = CreateSpriteObj(39, 0.4, pX, pY);
+    sArmL = CreateSpriteObj(40, 0.4, pX, pY);
+    sLegR = CreateSpriteObj(41, 0.6, pX, pY);
+    sLegL = CreateSpriteObj(41, 0.6, pX, pY);
     
-    //Object Sprites
-    // sComp1 = CreateSpriteObj(50, 0.82, 190, 150);
-    // sComp2 = CreateSpriteObj(50, 0.82, 75, 200);
-    // sStnd1 = CreateSpriteObj(43, 0.82, 75, 224);
-    // sStnd2 = CreateSpriteObj(43, 0.82, 190, 174);
-    // sBub1 = CreateSpriteObj(42, 0.75, 182, 120);
-    // sBub2 = CreateSpriteObj(42, 0.75, 70, 170);
+    // //Object Sprites
+    sComp1 = CreateSpriteObj(52, 0.82, 190, 150);
+    sComp2 = CreateSpriteObj(52, 0.82, 75, 200);
+    sStnd1 = CreateSpriteObj(43, 0.82, 75, 224);
+    sStnd2 = CreateSpriteObj(43, 0.82, 190, 174);
+    sBub1 = CreateSpriteObj(42, 0.75, 182, 120);
+    sBub2 = CreateSpriteObj(42, 0.75, 70, 170);
     
-    //main console
-    // sConsole = CreateSpriteObj(44, 0.55, 30, 120);
-    // sCon1 = CreateSpriteObj(45, 0.55, 22, 144);
-    // sCon2 = CreateSpriteObj(46, 0.55, 62, 125);
+    // //main console
+    sConsole = CreateSpriteObj(44, 0.55, 30, 120);
+    sCon1 = CreateSpriteObj(45, 0.55, 22, 144);
+    sCon2 = CreateSpriteObj(46, 0.55, 62, 125);
     //TODO - add chunks/parent objects, etc
     //chunk0.addChild(cPlayer);
+
+    const sMapButton = sprArr[50];
+    sMapButton.width *= 0.45;
+    sMapButton.height *= 0.45;
+    const sCommandButton = sprArr[51];
+    sCommandButton.width *= 0.45;
+    sCommandButton.height *= 0.45;
+
+    mapButton = Button({
+        x: 380, y:10,
+        //color: '#777',
+        width: 40,
+        height: 40,
+        image: sMapButton,
+        onDown() {
+            this.color = '#38C';
+            SwitchCommand(1);
+        },
+        onUp() { this.color = '#777'; },
+        onOver() { this.color = '#CCC'},
+        onOut: function() { this.color = null;}
+    });
+    commandButton = Button({
+        x: 330, y:10,
+        //color: '#777',
+        width: 40,
+        height: 40,
+        image: sCommandButton,
+        onDown() {
+            this.color = '#38C';
+            SwitchCommand(0);
+        },
+        onUp() { this.color = '#777'; },
+        onOver() { this.color = '#CCC'},
+        onOut: function() { this.color = null;}
+    });
+
+
+    //temp ship display
 
 }
 
 function SwitchCommand() {
     console.log("command window switched");
     stateInit = true;
-    sceneChange = 2;
+    //sceneChange = 2;
+
+    mapView = true;
 
     pX = 190;
     pY = 180;
 
-    load.text = " [Game Running: SHIP COMMAND]";
+    load.text = " [Game Running: NAVMAP]";
     tutText.text = " <Instructions for ship scanning>";
 }
 
@@ -181,21 +237,24 @@ function CreateMenuPanel() {
 
 function CreateSpriteObj(sNum, scale, offX, offY) {
     //Grab sprite image from sprite array (OLD METHOD)
-    //const tempSprite = sprArr[sNum];
-    console.log("create sprite");
+    const tempSprite = sprArr[sNum];
+    //console.log("create sprite");
     //Generate sprite image on the fly
     //queue ?
     //const genSprite = GenerateSpriteImage(sNum);
-    const genSprite = GenerateTempSpriteImage(sNum);
+    //const genSprite = GenerateTempSpriteImage(sNum);
 
-    //genSprite.width *= scale;
-    //genSprite.height *= scale;
+    // genSprite.width *= scale;
+    // genSprite.height *= scale;
+    tempSprite.width *= scale;
+    tempSprite.height *= scale;
     //console.log("tempSprite '" + sNum + "' width: " + tempSprite.width);
 
     const gameObj = Sprite({
         x: offX,
         y: offY,
-        image:genSprite,
+        //image:genSprite,
+        image:tempSprite,
     });
 
     return gameObj;
@@ -224,6 +283,7 @@ function InteractCheck(ltr) {
     }
     if(ltr === 'e' && dState == 4) { //print ermergency coms uwu
         d_t = 0;
+        mapEnable = true; //enable map toggle
         cosCTX.clearRect( 0, 0, consCanvas.width, consCanvas.height);
         dState = 5;
         intervalD_R = false;
@@ -244,7 +304,7 @@ function InteractCheck(ltr) {
 function PrintTutorialText(num) {
     if(num == 1) {
         tutText.text = "Toggle to ship command when at a core console ^";
-        commandButton.y = 10;
+
     }
 
 }
@@ -317,7 +377,7 @@ const loop = GameLoop({
             //kickoff first
             if(!initProcessing && !preSetup) {
                 Loading();
-                //prepInterval = setInterval(InitPreLoad, 25);
+                prepInterval = setInterval(InitPreLoad, 25);
                 preSetup = true; //presetup running
                 //InitPreLoad();
                 //calls all process functions for graphics
@@ -328,10 +388,10 @@ const loop = GameLoop({
 
                 //quick exit from initprocessing
                 //end processing (overall)
-                initProcessing = true;
-                clearInterval(prepInterval);
-                timer = 0.25;
-                sceneChange = 1;
+                // initProcessing = true;
+                // clearInterval(prepInterval);
+                // timer = 0.25;
+                // sceneChange = 1;
 
             }
             //presetup complete, initial processing complete
@@ -387,16 +447,16 @@ const loop = GameLoop({
             if(zPlayer != null) {
                 zPlayer.x = pX;
                 zPlayer.y = pY;
-                // sBody.x = pX;
-                // sBody.y = pY+19;
-                // sArmR.x = pX-7;
-                // sArmR.y = pY+14;
-                // sArmL.x = pX+16;
-                // sArmL.y = pY+14;
-                // sLegR.x = pX+10;
-                // sLegR.y = pY+36;
-                // sLegL.x = pX+2;
-                // sLegL.y = pY+36;
+                sBody.x = pX;
+                sBody.y = pY+19;
+                sArmR.x = pX-7;
+                sArmR.y = pY+14;
+                sArmL.x = pX+16;
+                sArmL.y = pY+14;
+                sLegR.x = pX+10;
+                sLegR.y = pY+36;
+                sLegL.x = pX+2;
+                sLegL.y = pY+36;
             }
         } else if(gameState == 2) { //GAME [Ship Combat]
             if(zShip != null) {
@@ -421,56 +481,72 @@ const loop = GameLoop({
         if(gameState == 0) { //START MENU
             
         } else if (gameState == 1) { //GAME
-            panelRight.render();
 
-            if(zPlayer) {
-                //objects
-                //TODO, setup render queue
-                // sComp1.render();
-                // sComp2.render();
-                // sStnd1.render();
-                // sStnd2.render();
-                // sBub1.render();
-
-                // sConsole.render();
-                // sCon1.render();
-                // sCon2.render();
-
-                // //simple state change for warning bubble
-                // if(dState<2) {
-                //     sBub2.render();
-                // }
-                
-                // if(dState == 4) {
-                //     sBub2.render();
-                // }
-
-                // if(dState >= 5) {
-                //     commandButton.render();
-                // }
-
-                // //player
-                // //TODO, setup player obj
-                zPlayer.render();
-                // sBody.render();
-                // sArmL.render();
-                // sArmR.render();
-                // sLegL.render();
-                // sLegR.render();
-            }
-        } else if (gameState == 2) { //ship command
-            
             panelRight.render();
             panelScan.render();
-            commandButton.render();
+            panelShip.render();
 
-            if(zShip) {
-                zShip.render();
-                zProbe.render();
+            if(!mapView) {
+                if(zPlayer) {
+                    //objects
+                    //TODO, setup render queue
+                    sComp1.render();
+                    sComp2.render();
+                    sStnd1.render();
+                    sStnd2.render();
+                    sBub1.render();
+    
+                    sConsole.render();
+                    sCon1.render();
+                    sCon2.render();
+    
+                    //simple state change for warning bubble
+                    if(dState<2) {
+                        sBub2.render();
+                    }
+                    
+                    if(dState == 4) {
+                        sBub2.render();
+                    }
+    
+                    if(dState >= 5) {
+                        warningText.render();
+                    }
+    
+                    // //player
+                    // //TODO, setup player obj
+                    zPlayer.render();
+                    sBody.render();
+                    sArmL.render();
+                    sArmR.render();
+                    sLegL.render();
+                    sLegR.render();   
+                }
+
+                if(mapEnable) {
+                    commandButton.render();
+                    mapButton.render();
+                }
+            } else {
+
             }
+    
+            shipReadout.render();
+    
+
+        } 
+        
+        //else if (gameState == 2) { //ship command  
+            // panelRight.render();
+            // //commandButton.render();
+            
+            // if(zShip) {
+            //     zShip.render();
+            //     zProbe.render();
+            // }  
+        //}
 
 
-        }
     }
 });
 

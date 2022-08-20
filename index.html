@@ -1,33 +1,35 @@
+<!--      JS13K PROTOSTELLAR       //
+//       By Alex Delderfield       //
+// https://twitter.com/Alex_ADEdge //
+//              2022               -->
 <!DOCTYPE html>
 <html>
-        <head>
-            <link rel="stylesheet" href="src/style.css">
-            <title>PROTOSTELLAR</title>
-        </head>
+    <head>
+        <link rel="stylesheet" href="src/style.css">
+        <title>PROTOSTELLAR</title>
+    </head>
+    
+    <body>
+        <div id="container" style="width: 640px; height: 420px">
+
+            <!-- Primary Game Canvas -->
+            <canvas id="canvasMain" width="640" height="360"></canvas>
+            <!-- Canvas for displaying pixel reconstruction -->
+            <canvas id="compileIMG" width="40" height="40" style="visibility: visible;"></canvas>
+            <canvas id="canvasConsole" width="640" height="60" style="visibility: visible;"></canvas>
+        </div>
         
-        <body>
-            <div id="container" style="width: 640px; height: 420px">
-
-                <!-- Primary Game Canvas -->
-                <canvas id="canvasMain" width="640" height="360"></canvas>
-                <!-- Canvas for displaying pixel reconstruction -->
-                <canvas id="compileIMG" width="40" height="40" style="visibility: visible;"></canvas>
-                <canvas id="canvasConsole" width="640" height="60" style="visibility: visible;"></canvas>
-
-                
-            </div>
+        <div style="position: relative; top: +60px;">
+            <div id="main"></div>
+            <!-- <div id="main2"><img id="testimg2" src="https://dl.dropboxusercontent.com/s/kupztnwshxj9aq9/character_dev2.png" crossorigin></div> -->
+            <textarea id="log"></textarea>
+            <canvas id="canvasDraw" width="40" height="40" style="background-color: #444"></canvas> 
+        </div>
             
-            <div style="position: relative; top: +60px;">
-                <div id="main"></div>
-                <!-- <div id="main2"><img id="testimg2" src="https://dl.dropboxusercontent.com/s/kupztnwshxj9aq9/character_dev2.png" crossorigin></div> -->
-                <textarea id="log"></textarea>
-                <canvas id="canvasDraw" width="40" height="40" style="background-color: #444"></canvas> 
-            </div>
-                
-            <script src="src/lib/kontra.rolled.min.js"></script>
-            <script src="src/main.js"></script>
-            <script src="src/px.js"></script>
-            <script src="src/utilities.js"></script>
-            <script src="src/ui.js"></script>
-        </body>
+        <script src="src/lib/kontra.rolled.min.js"></script>
+        <script src="src/main.js"></script>
+        <script src="src/px.js"></script>
+        <script src="src/utilities.js"></script>
+        <script src="src/ui.js"></script>
+    </body>
 </html>
