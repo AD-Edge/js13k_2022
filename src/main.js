@@ -9,21 +9,34 @@
 // import { 
 //     kontra
 // } from './kontra.js';
+// import { 
+//     kontra
+// } from '';
 
 // const { init, GameLoop, Scene, GameObject, Button, 
 //     Sprite, initPointer, initKeys, track, onKey, Text } = kontra;
 const { init, initPointer, GameLoop, Sprite, 
     initKeys, onKey, Text, Button } = kontra;
 
-const { canvas, context } = init();
+// let { canvas, context } = kontra.init();
+kontra.init();
+can = kontra.canvas;
+cx = kontra.canvas.getContext("2d");
+
+
+//was previously:
+//let { canvas, context } = init();
+
+// canvas = getCanvas();
+// context = getContext();
 
 compCanvas = document.getElementById('compileIMG');
 consCanvas = document.getElementById('canvasConsole');
 compCTX = compCanvas.getContext("2d");
 cosCTX = consCanvas.getContext("2d");
 
-initKeys();
-initPointer();
+kontra.initKeys();
+kontra.initPointer();
 
 //Primary Game State
 //0 = Start screen/zone
@@ -42,26 +55,26 @@ timer = 0;
 //Player
 pX = 110;
 pY = 180;
-var zPlayer, zShip, zProbe, sBody, sArmL, sArmR, sLegL, sLegR = null;
+var zPlayer, tempTest, zShip, zProbe, sBody, sArmL, sArmR, sLegL, sLegR = null;
 var sComp1, sComp2, sStnd1, sStnd2, sBub1, sBub2 = null;
 var sConsole, sCon1, sCon2, sExc = null;
-//var sMapButton, sCommandButton = null;
+var sMapButton, sCommandButton = null;
 
-var tutText = Text({
+var tutText = kontra.Text({
     x: 130,
     y: 60,
     text: ' ... ',
     color: '#FFFFFF',
     font: '14px Calibri, bold, sans-serif'
 });
-var shipReadout = Text({
+var shipReadout = kontra.Text({
     x: 460,
     y: 240,
     text: '[<-W]     [C]     [W->] \n               [E] [B]\n                     [B]',
     color: '#FFFFFF',
     font: '16px Calibri, bold, sans-serif'
 });
-var warningText = Text({
+var warningText = kontra.Text({
     x: 10,
     y: 30,
     text: 'UNKNOWN SHIP: HOSTILE ACTIVITY DETECTED',
@@ -92,7 +105,7 @@ d6 = "EMERGENCY COMS RECIEVED: tldr bad stuff ";
 //GAME FUNCTIONS
 /////////////////////////////////////////////////////
 function Loading() {
-    load = Text({
+    load = kontra.Text({
         x: 6,
         y:10,
         text: ' Preloading sprite data...',
@@ -122,7 +135,7 @@ function SceneSwitch() {
 //init setup state
 function InitSetupState() {
 
-    panelRight = Sprite({
+    panelRight = kontra.Sprite({
         x: 550,
         y: 0,
         anchor: {x: 0.5, y: 0.5},
@@ -131,7 +144,7 @@ function InitSetupState() {
         height: 1000,
         color: '#555'
       });
-    panelScan = Sprite({
+    panelScan = kontra.Sprite({
         x: 530,
         y: 95,
         anchor: {x: 0.5, y: 0.5},
@@ -140,7 +153,7 @@ function InitSetupState() {
         height: 150,
         color: '#777'
       });
-    panelShip = Sprite({
+    panelShip = kontra.Sprite({
         x: 530,
         y: 260,
         anchor: {x: 0.5, y: 0.5},
@@ -149,6 +162,8 @@ function InitSetupState() {
         height: 150,
         color: '#777'
       });
+
+    tempTest = CreateSpriteObjNEW(0.8);
 
     //Player Sprites
     zPlayer = CreateSpriteObj(37, 0.4, pX, pY);
@@ -176,16 +191,16 @@ function InitSetupState() {
     //TODO - add chunks/parent objects, etc
     //chunk0.addChild(cPlayer);
 
-    const sMapButton = sprArr[50];
+    sMapButton = sprArr[50];
     sMapButton.width *= 0.45;
     sMapButton.height *= 0.45;
-    const sCommandButton = sprArr[51];
+    sCommandButton = sprArr[51];
     sCommandButton.width *= 0.45;
     sCommandButton.height *= 0.45;
 
-    mapButton = Button({
-        x: 380, y:10,
-        //color: '#777',
+    mapButton = kontra.Button({
+        x: 320, y:10,
+        color: null,
         width: 40,
         height: 40,
         image: sMapButton,
@@ -197,9 +212,9 @@ function InitSetupState() {
         onOver() { this.color = '#CCC'},
         onOut: function() { this.color = null;}
     });
-    commandButton = Button({
-        x: 330, y:10,
-        //color: '#777',
+    commandButton = kontra.Button({
+        x: 280, y:10,
+        color: null,
         width: 40,
         height: 40,
         image: sCommandButton,
@@ -212,45 +227,60 @@ function InitSetupState() {
         onOut: function() { this.color = null;}
     });
 
-
     //temp ship display
-
 }
 
-function SwitchCommand() {
+function SwitchCommand(state) {
+    if(state == 0) {
+        mapView = false;
+        mapButton.enable();
+        //mapButton.image = sMapButton;
+        // mapButton.color = null;
+        load.text = " [Game Running: SHIP INTERIOR]";
+        tutText.text = " ...";
+        
+    } else if (state == 1) {
+        mapView = true;
+        mapButton.disable();
+        // mapButton.image = null;
+        // mapButton.color = '#AAA'
+        load.text = " [Game Running: NAVMAP]";
+        tutText.text = " <Instructions for ship scanning here>";
+    }
+
     console.log("command window switched");
-    stateInit = true;
-    //sceneChange = 2;
-
-    mapView = true;
-
-    pX = 190;
-    pY = 180;
-
-    load.text = " [Game Running: NAVMAP]";
-    tutText.text = " <Instructions for ship scanning>";
 }
 
 function CreateMenuPanel() {
 
 }
 
+function CreateSpriteObjNEW(scale) {
+    //Generate sprite image on the fly
+    //queue ?
+    const genSprite = GenerateTempSpriteImage(scale);
+    // genSprite.width *= scale;
+    // genSprite.height *= scale;
+    
+    const gameObj = kontra.Sprite({
+        x: 50,
+        y: 50,
+        image:genSprite,
+    });
+
+    return gameObj;
+}
+
 function CreateSpriteObj(sNum, scale, offX, offY) {
     //Grab sprite image from sprite array (OLD METHOD)
     const tempSprite = sprArr[sNum];
     //console.log("create sprite");
-    //Generate sprite image on the fly
-    //queue ?
-    //const genSprite = GenerateSpriteImage(sNum);
-    //const genSprite = GenerateTempSpriteImage(sNum);
 
-    // genSprite.width *= scale;
-    // genSprite.height *= scale;
     tempSprite.width *= scale;
     tempSprite.height *= scale;
     //console.log("tempSprite '" + sNum + "' width: " + tempSprite.width);
 
-    const gameObj = Sprite({
+    const gameObj = kontra.Sprite({
         x: offX,
         y: offY,
         //image:genSprite,
@@ -357,7 +387,7 @@ function SavePlayerPos() {
 /////////////////////////////////////////////////////
 //PRIMARY GAME LOOP
 /////////////////////////////////////////////////////
-const loop = GameLoop({
+const loop = kontra.GameLoop({
 
     update: () => {
         //Handle scene swapping
@@ -382,16 +412,8 @@ const loop = GameLoop({
                 //InitPreLoad();
                 //calls all process functions for graphics
                 //stop console or ctx being removed by roller
-                // console.log(canvas);
-                // console.log(context);
-
-
-                //quick exit from initprocessing
-                //end processing (overall)
-                // initProcessing = true;
-                // clearInterval(prepInterval);
-                // timer = 0.25;
-                // sceneChange = 1;
+                console.log(can);
+                console.log(cx);
 
             }
             //presetup complete, initial processing complete
@@ -463,7 +485,6 @@ const loop = GameLoop({
                 zShip.x = pX;
                 zShip.y = pY;
             }
-            zProbe.render();
         }
 
     },
@@ -521,18 +542,37 @@ const loop = GameLoop({
                     sArmR.render();
                     sLegL.render();
                     sLegR.render();   
+
+                    //enabled button                    
+                    cx.beginPath();
+                    cx.rect(280, 10, 40, 40);
+                    cx.fillStyle = "#222222";
+                    cx.fill();
                 }
 
-                if(mapEnable) {
-                    commandButton.render();
-                    mapButton.render();
-                }
+
+                shipReadout.render();
             } else {
+                
+                
+                commandButton.render();
+                mapButton.render();
+
+                
+                GenerateGalacticStructure(context);
+                
+                //enabled button  
+                cx.beginPath();
+                cx.rect(320, 10, 40, 40);
+                cx.fillStyle = "#222222";
+                cx.fill();
 
             }
     
-            shipReadout.render();
     
+            tempTest.render();
+            commandButton.render();
+            mapButton.render();
 
         } 
         
@@ -555,36 +595,36 @@ loop.start();
 /////////////////////////////////////////////////////
 //BUTTONS/INPUT
 ////////////////////////////////////////////////////
-onKey(['left', 'a', 'q'], function(e) {
+kontra.onKey(['left', 'a', 'q'], function(e) {
     //console.log("left button");
     pX -= 14;
     //console.log("DEBUG POS: " + pX + ", " + pY);
 }, 'keyup');
 
-onKey(['right', 'd', 'd'], function(e) {
+kontra.onKey(['right', 'd', 'd'], function(e) {
     //console.log("right button");
     pX += 14;
     //console.log("DEBUG POS: " + pX + ", " + pY);
 }, 'keyup');
 
-onKey(['up', 'w', 'z'], function(e) {
+kontra.onKey(['up', 'w', 'z'], function(e) {
     //console.log("up button");
     pY -= 10;
     //console.log("DEBUG POS: " + pX + ", " + pY);
 }, 'keyup');
 
-onKey(['down', 's'], function(e) {
+kontra.onKey(['down', 's'], function(e) {
     //console.log("down button");
     pY += 10;
     //console.log("DEBUG POS: " + pX + ", " + pY);
 }, 'keyup');
 
-onKey(['f'], function(e) {
+kontra.onKey(['f'], function(e) {
     //console.log("down button");
     InteractCheck('f');
 }, 'keyup');
 
-onKey(['e'], function(e) {
+kontra.onKey(['e'], function(e) {
     //console.log("down button");
     InteractCheck('e');
 }, 'keyup');

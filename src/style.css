@@ -16,6 +16,16 @@ body {
     outline: 4px solid #222222; 
     outline-offset: -4px;
 }
+#canvasMap { 
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    z-index: 8;
+    visibility: visible;
+    background-color: #151515;
+    /* outline: 4px solid #222222; 
+    outline-offset: -4px; */
+}
 
 #compileIMG { 
     z-index: 8;

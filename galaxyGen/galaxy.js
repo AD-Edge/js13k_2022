@@ -1,11 +1,11 @@
-var canvas = document.getElementById('canvasMain');
-var ctx = canvas.getContext("2d");
-var coreX = canvas.width / 2.25;
-var coreY = canvas.height / 2;
+var can = document.getElementById('canvasMain');
+var cnv_ctx = can.getContext("2d");
+var coreX = can.width / 2.25;
+var coreY = can.height / 2;
 var pxW = 6;
 var coreThickness = 1;
 
-function GenerateGalacticStructure() {
+function GenerateGalacticStructure(ctx) {
     a = 1.2;
     b = 1.2;
     scale = 1.5;
@@ -22,7 +22,7 @@ function GenerateGalacticStructure() {
         //console.log("x: " + x + ", y: " + y);
         ctx.lineTo(x, y);
         //get point in grid
-        DrawPixelInGrid(x, y);
+        //DrawPixelInGrid(x, y);
     }
     ctx.strokeStyle = "#FFF";
     ctx.stroke();
@@ -37,7 +37,7 @@ function GenerateGalacticStructure() {
         y = (coreY - (((a + b)+0.2*i) * angle/scale + 0.1*(0.8*i)) * Math.sin(angle)) + 0.15*i;
         ctx.lineTo(x, y);
         //get point in grid
-        DrawPixelInGrid(x, y);
+        //DrawPixelInGrid(x, y);
     }
     ctx.strokeStyle = "#FFF";
     ctx.stroke();
@@ -61,25 +61,29 @@ function DrawPixelInGrid(x, y) {
 function DrawPixelMap() {
     //draw pixels
     var pix = 0;
-    for(var i = 0; i < canvas.height; i+=pxW) {
-        for(var j = 0; j < canvas.width; j+=pxW) {
-            if( pix & 1 ) {
+    for(var i = 0; i < can.height; i+=pxW) {
+        for(var j = 0; j < can.width; j+=pxW) {
+            //if( pix & 1 ) {
                 //console.log("odd");
-                ctx.globalAlpha = 0.15;
-                ctx.fillStyle = '#FFF';
-                ctx.fillRect( (j), (i), pxW, pxW);
+            var prng = generateFloat(rng);
+            if(prng > 0.0) { //filter variable for star gen
+                cnv_ctx.globalAlpha = prng;
+                cnv_ctx.fillStyle = '#FFF';
+                cnv_ctx.fillRect( (j), (i), pxW, pxW);
             } 
+
+            //}
             pix++;
         }
         pix++;
     }
 }
 
-const GRID_SIZE = 3; //scale of noise map/detail
-const RESOLUTION = 32; //32 = pixelated, 128 = smooth
+const GRID_SIZE = 8; //scale of noise map/detail
+const RESOLUTION = 8; //32 = pixelated, 128 = smooth
 const COLOR_SCALE = 250; //colour range
 
-let pixel_size = canvas.width / RESOLUTION;
+let pixel_size = can.width / RESOLUTION;
 let node_size = GRID_SIZE / RESOLUTION;
 
 var gradients = {};
@@ -91,8 +95,8 @@ function PerlinNoiseMap() {
     for(let y = 0; y < GRID_SIZE; y += node_size/ GRID_SIZE) {
         for(let x = 0; x < GRID_SIZE; x += node_size/ GRID_SIZE) {
             let v = parseInt(CalcPerlin(x,y) * COLOR_SCALE);
-            ctx.fillStyle = 'hsl('+v+',50%,50%)';
-            ctx.fillRect( x / GRID_SIZE * canvas.width,
+            cnv_ctx.fillStyle = 'hsl('+v+',50%,50%)';
+            cnv_ctx.fillRect( x / GRID_SIZE * canvas.width,
                           y / GRID_SIZE * canvas.width,
                         pixel_size,pixel_size);
         }
@@ -120,19 +124,19 @@ function CalcPerlin(x, y) {
 
 function RandomVector() {
     //var theta = Math.random() * 2 * Math.PI;
-    var theta = Mulberry32(SEED) * 2 * Math.PI;
+    var theta = generateFloat(rng) * 2 * Math.PI;
     return {
         x: Math.cos(theta),
         y: Math.sin(theta)
     };
 }
 
-function Mulberry32(a) {
-    a |= 0; a = a + 0x6D2B79F5 | 0;
-    var t = Math.imul(a ^ a >>> 15, 1 | a);
-    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
-    return ((t ^ t >>> 14) >>> 0) / 4294967296;
-}
+// function Mulberry32(a) {
+//     a |= 0; a = a + 0x6D2B79F5 | 0;
+//     var t = Math.imul(a ^ a >>> 15, 1 | a);
+//     t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+//     return ((t ^ t >>> 14) >>> 0) / 4294967296;
+// }
 
 function DotProductGrid(x, y, vx, vy, seed){
     let g_vect;
@@ -154,27 +158,113 @@ function Interpret(x, a, b) {
     return a + SmoothStep(x) * (b-a);
 }
 
-function CreateRandomWithSeed(seed) {
-    seed |= 0;
-    seed = seed + 0x6D2B79F5 | 0;
-    let imul = Math.imul(seed ^ seed >>> 15, 1 | seed);
-    imul = imul + Math.imul(imul ^ imul >>> 7, 61 | imul) ^ imul;
+
+//PRNG via ooflorent/example.js
+
+let rng = createNumberGenerator(
+    createSeedFromString("RandSeedForGamejam")
+);
+
+// // Generate a boolean with 30% success
+// console.log(generateBoolean(rng, 0.5)); 
+// console.log(generateBoolean(rng, 0.5)); 
+// console.log(generateBoolean(rng, 0.5)); 
+// console.log(generateBoolean(rng, 0.5)); 
+// console.log(generateBoolean(rng, 0.5)); 
+// console.log(generateBoolean(rng, 0.5)); 
+// console.log(generateBoolean(rng, 0.5)); 
+// console.log(generateBoolean(rng, 0.5)); 
+
+// // Generate a D6
+// console.log(generateNumber(rng, 1, 6)); // 3
+// console.log(generateNumber(rng, 1, 6)); // 5
+// console.log(generateNumber(rng, 1, 6)); // 5
+
+// // Generate a float between 0 and 1
+// console.log(generateFloat(rng)); 
+// console.log(generateFloat(rng)); 
+
+function toUint32(x) {
+    return x >>> 0;
+  }
+  
+  function createSeedFromString(string) {
+    let seed = 0;
+    for (let i = 0; i < string.length; ++i) {
+      seed ^= string.charCodeAt(i) << i % 4 * 8;
+    }
+    return toUint32(seed);
+  }
+  
+  function createNumberGenerator(seed) {
+    return new Uint32Array([
+      Math.imul(seed, 0x85ebca6b), 
+      Math.imul(seed, 0xc2b2ae35),
+    ]);
+  }
+  
+  function generate(rng) {
+    let s0 = rng[0];
+    let s1 = rng[1] ^ s0;
+    rng[0] = (s0 << 26 | s0 >> 8) ^ s1 ^ s1 << 9;
+    rng[1] = s1 << 13 | s1 >> 19;
+    return toUint32(Math.imul(s0, 0x9e3779bb));
+  }
+  
+  function generateBoolean(rng, probability) {
+    return generate(rng) < toUint32(probability * 0xffffffff);
+  }
+  
+  function generateFloat(rng) {
+    return generate(rng) / 0xffffffff;
+  }
+  
+  function generateNumber(rng, min, max) {
+    return min + generate(rng) % (max - min + 1);
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// function CreateRandomWithSeed(seed) {
+//     seed |= 0;
+//     seed = seed + 0x6D2B79F5 | 0;
+//     let imul = Math.imul(seed ^ seed >>> 15, 1 | seed);
+//     imul = imul + Math.imul(imul ^ imul >>> 7, 61 | imul) ^ imul;
     
-    return ((imul ^ imul >>> 14) >>> 0) / 4294967296;
-}
+//     return ((imul ^ imul >>> 14) >>> 0) / 4294967296;
+// }
 
 
-GenerateGalacticStructure();
+//GenerateGalacticStructure(ctx);
 
+//random pixel map demo
 //DrawPixelMap();
 
-PerlinNoiseMap();
+//perlin noise map demo
+//PerlinNoiseMap();
 
-var seed_new = CreateRandomWithSeed(4285375);
-var test = Mulberry32(seed_new);
+//var seed_new = CreateRandomWithSeed(4285375);
+//var test = Mulberry32(seed_new);
 
 // console.log("Generating random num via Mulberry32: " + test*10);
-console.log("Generating random seed: " + seed_new);
+//console.log("Generating random seed: " + seed_new);
 
 
 //outer expansion added

@@ -2,7 +2,7 @@
 //Tools and Functions
 /////////////////////////////////////////////////////
 
-var pxW = 2;
+var pxWidth = 5;
 var canvasDraw = document.getElementById("canvasDraw");
 var dctx = canvasDraw.getContext('2d');
 //Grid Calcs / variables
@@ -11,7 +11,7 @@ var gridY = 8; //number of grid spaces, from 2 - 32
 var gridPix = 16; //number of pixels in each grid space
 
 //New method, for generating sprite images upon request
-function GenerateSpriteImage(sNum) {
+//function GenerateSpriteImage(sNum) {
 
     //grab data from px.js
 
@@ -21,62 +21,68 @@ function GenerateSpriteImage(sNum) {
 
     //save as base 64? Maybe not, just use the image data direct?
 
-
-}
+//}
 
 //Before kicking off queue, use this image instead
-function GenerateTempSpriteImage(sNum) {
+function GenerateTempSpriteImage(scale) {
+    const img = new Image();
     //fill canvas
     dctx.clearRect(0, 0, canvasDraw.width, canvasDraw.height);
     //draw pixels
+    var spriteIMG64 = DrawDebugSprite();
 
+    img.src = spriteIMG64;
+    //img.id = "testimg"; // can give an id if we need to identigy later 
+
+    return img;
 }
     
-function DrawPixelMap() {
+function DrawDebugSprite() {
     //draw pixels
     var pix = 0;
-    for(var i = 0; i < canvas.height; i+=pxW) {
-        for(var j = 0; j < canvas.width; j+=pxW) {
-            if( pix & 1 ) {
+    for(var i = 0; i < canvasDraw.height; i+=pxWidth) {
+        for(var j = 0; j < canvasDraw.width; j+=pxWidth) {
+            if( pix & 1 ) { //check if odd
                 //console.log("odd");
-                ctx.globalAlpha = 0.15;
-                ctx.fillStyle = '#FFF';
-                ctx.fillRect( (j), (i), pxW, pxW);
+                dctx.globalAlpha = 1; //alpha adjust
+                dctx.fillStyle = '#FFF';
+                dctx.fillRect( (j), (i), pxWidth, pxWidth);
             }
             pix++;
         }
         pix++;
     }
 
-    //generate and return image
+    var b64IMG = getBase64Image();
+    console.log(b64IMG);
 
-    return null;
-
+    return b64IMG;
 }
 
-function getBase64Img() {
-    // return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQBAMAAAB8P++eAAAAMFBMVEX////7+/vr6+vNzc2qqqplywBWrQD/Y5T/JTf+AADmAABeeEQvNydqAAAGBAMAAAGoF14oAAAEBUlEQVR42u2WTUwUVxzA/2925LIojsyqCLtMqSQeFJeFROPHstjdNkZdkaiX9mRTovYgSYNFE43Rg5IeNG5SqyaVcGzXkvTm7hZWq9bKriAYYzSLBI3WAplp0jY2kV3fzPuYGcBxD/bmO0zevPeb//f7v0FQ5EDvwf8LFG89ixYDol9Wo+smKal2sHF6kM6q7qbE5tY03d7SHR6ygiuvwY1txkzIlPaD3NQ4Zryk/PCP1wKibBlI97dq+idXUxqgcEkVnruS/smRpuWaCbrHU5pc/wyTQsata0U77wVBTlRP9UNkT9oE61K9AHL9VERbeTVurMjNm54mqrFw8CwKmWBfpf6V2Dx/TdxN3YjMf2JwIEZ8JnjnEbEjvLAQZ1EKlxkciJ9UcdD1Z5ztDmgsgPIrMkWtMgfd41xOYXZOIjUcLB3tdchypHWIgb5k2gH0nE0zMHjRCRTLWxgY/VQrDuybcAQ/DDEwmwEn8COlSDBcTUE0GXcEjRzqoDDhDH7sfccg2szAt9hogjBFQFRmDyd9N1VTEFegXXKEVKQFJHEUd0DSKhLthIm0HSQpnNdCNizgq147GP0m7QTygNMye6NqM9ekwlG4kLI5I4cMZ+bVhMA8MwX1rw9oIjakAYX6jXlBRRJ4BF6PwmRSfQyLFhJwWy/IG8khKuirljODG0DfGAd3qCBNEol5vCqFAxqYLeUyB0H2A2Q0DspRD3BQfJEc5KBl6KprG6pNEPqqfkKzOQBsha2bQeVw6g3nSySaGYgb99ylhsLDLVYQ3E+oozOGHKzVbCBs+HkuUm6ivd4E0ZYeNTPTTrn51+0wA9TJgpZVLeaV1y+4yS8c64W0/AcFTBCHK/fFEMwFAmo4KRldE0ZxsF8cGbTuzYqHtOz8t6e8TMk5CcjNSC+kdcfgPyag9AoDhUQARmvAcIiAW3v0JzWJg64BJXdBQ21+/b4zwMqRW5dA2h3I7+onYJd+Y4i3FbyMxz4hxE7hS2MBdSq6Fgq6Bny/dxv6Sk76COj6Yz91ZG8dToQ7oYNCqu4QjX9FK5UoPt/PXO701mruhwcxGP2ecahzzxBtUtlzLHclsXtBA6wc+a2brlUc8TCvg5cPM7LiaOPT8Y4ub3bpAbqy+MQ18xRmvIe5nr83YXDt8Nca0/GveWniSHByybEVwx1dD1ccYB/6yF8DTaGcYLFA391o6DjjohaWfKXQ/xCWazmhPDhNbYf2WH4fse9zhRUkLwrXlUD+9iVD5HR77KWheclxkqsZ1bM+pqcWZ2xVe0zXjPb6pyO8IK1l5trcA7mLKuo48+VpQG0BuPmZeTbs9Vi+9oQyqv6Ieyou4FybU+HqRS4o+TH1VG7MvgFFjvfguwFfA4FobmCxcnTPAAAAAElFTkSuQmCC";
+// function getBase64Img() {
+//     // return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQBAMAAAB8P++eAAAAMFBMVEX////7+/vr6+vNzc2qqqplywBWrQD/Y5T/JTf+AADmAABeeEQvNydqAAAGBAMAAAGoF14oAAAEBUlEQVR42u2WTUwUVxzA/2925LIojsyqCLtMqSQeFJeFROPHstjdNkZdkaiX9mRTovYgSYNFE43Rg5IeNG5SqyaVcGzXkvTm7hZWq9bKriAYYzSLBI3WAplp0jY2kV3fzPuYGcBxD/bmO0zevPeb//f7v0FQ5EDvwf8LFG89ixYDol9Wo+smKal2sHF6kM6q7qbE5tY03d7SHR6ygiuvwY1txkzIlPaD3NQ4Zryk/PCP1wKibBlI97dq+idXUxqgcEkVnruS/smRpuWaCbrHU5pc/wyTQsata0U77wVBTlRP9UNkT9oE61K9AHL9VERbeTVurMjNm54mqrFw8CwKmWBfpf6V2Dx/TdxN3YjMf2JwIEZ8JnjnEbEjvLAQZ1EKlxkciJ9UcdD1Z5ztDmgsgPIrMkWtMgfd41xOYXZOIjUcLB3tdchypHWIgb5k2gH0nE0zMHjRCRTLWxgY/VQrDuybcAQ/DDEwmwEn8COlSDBcTUE0GXcEjRzqoDDhDH7sfccg2szAt9hogjBFQFRmDyd9N1VTEFegXXKEVKQFJHEUd0DSKhLthIm0HSQpnNdCNizgq147GP0m7QTygNMye6NqM9ekwlG4kLI5I4cMZ+bVhMA8MwX1rw9oIjakAYX6jXlBRRJ4BF6PwmRSfQyLFhJwWy/IG8khKuirljODG0DfGAd3qCBNEol5vCqFAxqYLeUyB0H2A2Q0DspRD3BQfJEc5KBl6KprG6pNEPqqfkKzOQBsha2bQeVw6g3nSySaGYgb99ylhsLDLVYQ3E+oozOGHKzVbCBs+HkuUm6ivd4E0ZYeNTPTTrn51+0wA9TJgpZVLeaV1y+4yS8c64W0/AcFTBCHK/fFEMwFAmo4KRldE0ZxsF8cGbTuzYqHtOz8t6e8TMk5CcjNSC+kdcfgPyag9AoDhUQARmvAcIiAW3v0JzWJg64BJXdBQ21+/b4zwMqRW5dA2h3I7+onYJd+Y4i3FbyMxz4hxE7hS2MBdSq6Fgq6Bny/dxv6Sk76COj6Yz91ZG8dToQ7oYNCqu4QjX9FK5UoPt/PXO701mruhwcxGP2ecahzzxBtUtlzLHclsXtBA6wc+a2brlUc8TCvg5cPM7LiaOPT8Y4ub3bpAbqy+MQ18xRmvIe5nr83YXDt8Nca0/GveWniSHByybEVwx1dD1ccYB/6yF8DTaGcYLFA391o6DjjohaWfKXQ/xCWazmhPDhNbYf2WH4fse9zhRUkLwrXlUD+9iVD5HR77KWheclxkqsZ1bM+pqcWZ2xVe0zXjPb6pyO8IK1l5trcA7mLKuo48+VpQG0BuPmZeTbs9Vi+9oQyqv6Ieyou4FybU+HqRS4o+TH1VG7MvgFFjvfguwFfA4FobmCxcnTPAAAAAElFTkSuQmCC";
 
-    return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAAiCAYAAAC5gzL5AAAAAXNSR0IArs4c6QAAANdJREFUSEvllUsOgCAMROVucGoOhymxZKz9oFEX6k7Ux3Q6xdRaa4u4SilyaXdfa93dJwmJAPw1glyI3JEAvMkURAOwCgL9EUL1XzYWOyBB2H7TWHTdywsD+P2RE63/bmy3zBBQhUSpDWMvPdHUEASVdyW4EKlgs++H5JzHUYAysQxrjlhNmoVoGTlAvKm1AuhCInMxbLTBKAeVzELYt8PJFqUUn4eeSCOt4aP1Xo438jJc2hFhljOrpBur/Xe0llrlPAu5pcVn/DDL+RjkTPTf88Q6qHF9Bd5rPYTJOkQGAAAAAElFTkSuQmCC";
-}
+//     return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAAiCAYAAAC5gzL5AAAAAXNSR0IArs4c6QAAANdJREFUSEvllUsOgCAMROVucGoOhymxZKz9oFEX6k7Ux3Q6xdRaa4u4SilyaXdfa93dJwmJAPw1glyI3JEAvMkURAOwCgL9EUL1XzYWOyBB2H7TWHTdywsD+P2RE63/bmy3zBBQhUSpDWMvPdHUEASVdyW4EKlgs++H5JzHUYAysQxrjlhNmoVoGTlAvKm1AuhCInMxbLTBKAeVzELYt8PJFqUUn4eeSCOt4aP1Xo438jJc2hFhljOrpBur/Xe0llrlPAu5pcVn/DDL+RjkTPTf88Q6qHF9Bd5rPYTJOkQGAAAAAElFTkSuQmCC";
+// }
 
 
-var base64img = getBase64Img();
-var base64 = null;
+// var base64img = getBase64Img();
+// var base64 = null;
 
-function Base64ToImage(base64img, callback) {
-    const img = new Image();
-    img.onload = function() {
-        callback(img);
-    };
-    img.src = base64img;
-    img.id = "testimg";
+// function Base64ToImage(base64img, callback) {
+//     const img = new Image();
+//     img.onload = function() {
+//         callback(img);
+//     };
+//     img.src = base64img;
+//     img.id = "testimg";
 
-    //and convert back to base 64? 
-    //var base64 = ImageToBase64();
-    //console.log(base64);
+//     //and convert back to base 64? 
+//     //var base64 = ImageToBase64();
+//     //console.log(base64);
     
-}
+// }
+// //take base 64 text and append to index div element
 // Base64ToImage(base64img, function(img) {
 //     document.getElementById('main').appendChild(img);
 //     var log = "w=" + img.width + " h=" + img.height;
@@ -94,21 +100,23 @@ function Base64ToImage(base64img, callback) {
 //     console.log(base64);
 // }
 
-function getBase64Image(img) {
-    // var canvas = document.createElement("canvas");
+function getBase64Image() {
+    //var canvas = document.createElement("canvas");
     //var ctx = canvas.getContext("2d");
+    // canvasDraw.width = img.width; //previously was drawing an image to array to test getting base 64 image, disabled for now
+    // canvasDraw.height = img.height;
+    // dctx.drawImage(img, 0, 0);
+    // var dataURL = canvasDraw.toDataURL("image/png");
+    // return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
 
-    canvasDraw.width = img.width;
-    canvasDraw.height = img.height;
-    dctx.drawImage(img, 0, 0);
     var dataURL = canvasDraw.toDataURL("image/png");
-    return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+    return dataURL;
 }
 
-function ImageToBase64() {
-    var dataURL = canctx.toDataURL("image/png");
-    return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
-}
+// function ImageToBase64() {
+//     var dataURL = canctx.toDataURL("image/png");
+//     return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+// }
 
 
 //Data URI ?
