@@ -37,7 +37,7 @@ const px = [
     "4,5,F9,F9,F0", //8 34
     "3,5,F7,92", //9 35    
     "7,6,7D,FE,4F,F7,CA,80", //36 skull  
-    "10,10,7F,BF,FE,F,1,C0,70,1C,7,83,71,CF,E0", //37 helmet
+    "8,8,7E,FF,E3,C1,C1,C1,62,3C", //37 helmet
     "9,9,7F,BF,FF,FF,FF,87,DC,E,FF,7F,80", //38 body
     "4,14,13,30,66,EE,CC,C0,C8", //39 arm right
     "3,13,48,6D,9B,6C,32", //40 arm left

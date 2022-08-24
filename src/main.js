@@ -18,10 +18,10 @@
 const { init, initPointer, GameLoop, Sprite, 
     initKeys, onKey, Text, Button } = kontra;
 
-// let { canvas, context } = kontra.init();
-kontra.init();
-can = kontra.canvas;
-cx = kontra.canvas.getContext("2d");
+let { canvas, context } = kontra.init();
+//kontra.init();
+//can = kontra.canvas;
+//cx = kontra.canvas.getContext("2d");
 
 
 //was previously:
@@ -55,10 +55,14 @@ timer = 0;
 //Player
 pX = 110;
 pY = 180;
-var zPlayer, tempTest, zShip, zProbe, sBody, sArmL, sArmR, sLegL, sLegR = null;
+var zPlayer, tempTest4x4, tempTest8x8, zShip, zProbe, sBody, sArmL, sArmR, sLegL, sLegR = null;
 var sComp1, sComp2, sStnd1, sStnd2, sBub1, sBub2 = null;
 var sConsole, sCon1, sCon2, sExc = null;
 var sMapButton, sCommandButton = null;
+
+//temp sprites for preloading
+var spr4x4 = null; //4x4 temp sprite render to 16px
+var spr8x8 = null; //8x8 temp sprite render to 32px
 
 var tutText = kontra.Text({
     x: 130,
@@ -112,6 +116,11 @@ function Loading() {
         color: '#FFFFFF',
         font: '16px Calibri, bold, sans-serif'
     });
+
+    //generate temp debug sprites
+    spr4x4 = CreateSpriteIMG(16, 10); //4x4 temp sprite render to 16px
+    spr8x8 = CreateSpriteIMG(32, 5); //8x8 temp sprite render to 32px
+
 }
 
 function SceneSwitch() {
@@ -163,40 +172,50 @@ function InitSetupState() {
         color: '#777'
       });
 
-    tempTest = CreateSpriteObjNEW(0.8);
+    //Grab generated debug sprites
+    tempTest4x4 = AssignDebugSprite(spr4x4, 40, 40);
+    tempTest8x8 = AssignDebugSprite(spr8x8, 80, 40);
+
+    //Generate initial sprites
 
     //Player Sprites
-    zPlayer = CreateSpriteObj(37, 0.4, pX, pY);
-    zShip = CreateSpriteObj(48, 0.4, pX, pY);
-    zProbe = CreateSpriteObj(49, 0.3, 50, 50);
+    zPlayer = GenerateNewSpriteOBJ(37, 16, 5, pX, pY);
+    // zPlayer = AssignDebugSprite(spr8x8, pX, pY);
 
-    sBody = CreateSpriteObj(38, 0.4, pX, pY);
-    sArmR = CreateSpriteObj(39, 0.4, pX, pY);
-    sArmL = CreateSpriteObj(40, 0.4, pX, pY);
-    sLegR = CreateSpriteObj(41, 0.6, pX, pY);
-    sLegL = CreateSpriteObj(41, 0.6, pX, pY);
+    zShip = AssignDebugSprite(spr8x8, pX, pY);
+    zProbe = AssignDebugSprite(spr8x8, 50, 50);
+
+    sBody = AssignDebugSprite(spr4x4, pX, pY);
+    sArmR = AssignDebugSprite(spr4x4, pX, pY);
+    sArmL = AssignDebugSprite(spr4x4, pX, pY);
+    sLegR = AssignDebugSprite(spr4x4, pX, pY);
+    sLegL = AssignDebugSprite(spr4x4, pX, pY);
     
     // //Object Sprites
-    sComp1 = CreateSpriteObj(52, 0.82, 190, 150);
-    sComp2 = CreateSpriteObj(52, 0.82, 75, 200);
-    sStnd1 = CreateSpriteObj(43, 0.82, 75, 224);
-    sStnd2 = CreateSpriteObj(43, 0.82, 190, 174);
-    sBub1 = CreateSpriteObj(42, 0.75, 182, 120);
-    sBub2 = CreateSpriteObj(42, 0.75, 70, 170);
+    sComp1 = AssignDebugSprite(spr4x4, 190, 150);
+    sComp2 = AssignDebugSprite(spr4x4, 75, 200);
+    sStnd1 = AssignDebugSprite(spr4x4, 75, 224);
+    sStnd2 = AssignDebugSprite(spr4x4, 190, 174);
+    sBub1 = AssignDebugSprite(spr4x4, 182, 120);
+    sBub2 = AssignDebugSprite(spr4x4, 70, 170);
     
     // //main console
-    sConsole = CreateSpriteObj(44, 0.55, 30, 120);
-    sCon1 = CreateSpriteObj(45, 0.55, 22, 144);
-    sCon2 = CreateSpriteObj(46, 0.55, 62, 125);
+    sConsole = AssignDebugSprite(spr4x4, 30, 120);
+    sCon1 = AssignDebugSprite(spr4x4, 22, 144);
+    sCon2 = AssignDebugSprite(spr4x4, 62, 125);
+    
+    //Old process sprite system
+    //sCon2 = CreateSpriteObj(46, 0.55, 62, 125);
+    
     //TODO - add chunks/parent objects, etc
     //chunk0.addChild(cPlayer);
 
-    sMapButton = sprArr[50];
-    sMapButton.width *= 0.45;
-    sMapButton.height *= 0.45;
-    sCommandButton = sprArr[51];
-    sCommandButton.width *= 0.45;
-    sCommandButton.height *= 0.45;
+    // sMapButton = sprArr[50];
+    // sMapButton.width *= 0.45;
+    // sMapButton.height *= 0.45;
+    // sCommandButton = sprArr[51];
+    // sCommandButton.width *= 0.45;
+    // sCommandButton.height *= 0.45;
 
     mapButton = kontra.Button({
         x: 320, y:10,
@@ -228,6 +247,7 @@ function InitSetupState() {
     });
 
     //temp ship display
+
 }
 
 function SwitchCommand(state) {
@@ -251,44 +271,62 @@ function SwitchCommand(state) {
     console.log("command window switched");
 }
 
-function CreateMenuPanel() {
-
-}
-
-function CreateSpriteObjNEW(scale) {
+//create a sprite and return the game object
+function GenerateNewSpriteOBJ(sNum, size, px_width, x, y) {
     //Generate sprite image on the fly
     //queue ?
-    const genSprite = GenerateTempSpriteImage(scale);
-    // genSprite.width *= scale;
-    // genSprite.height *= scale;
+    const genSprite = GenerateSpriteImage(sNum, px_width);
+    genSprite.width = size;
+    genSprite.height = size;
     
     const gameObj = kontra.Sprite({
-        x: 50,
-        y: 50,
+        x: x,
+        y: y,
         image:genSprite,
     });
 
     return gameObj;
 }
 
-function CreateSpriteObj(sNum, scale, offX, offY) {
-    //Grab sprite image from sprite array (OLD METHOD)
-    const tempSprite = sprArr[sNum];
-    //console.log("create sprite");
+//just creating debug sprites for now
+function CreateSpriteIMG(size, px_width) {
+    //Generate sprite image on the fly
+    //queue ?
+    const genSprite = GenerateSpriteImage(null, px_width);
+    genSprite.width = size;
+    genSprite.height = size;
+    return genSprite;
+}
 
-    tempSprite.width *= scale;
-    tempSprite.height *= scale;
-    //console.log("tempSprite '" + sNum + "' width: " + tempSprite.width);
+function AssignDebugSprite(spr, x, y) {
 
     const gameObj = kontra.Sprite({
-        x: offX,
-        y: offY,
-        //image:genSprite,
-        image:tempSprite,
+        x: x,
+        y: y,
+        image:spr,
     });
 
     return gameObj;
 }
+
+// function CreateSpriteObj(sNum, scale, offX, offY) {
+//     //Grab sprite image from sprite array (OLD METHOD)
+//     const tempSprite = sprArr[sNum];
+//     //console.log("create sprite");
+
+//     tempSprite.width *= scale;
+//     tempSprite.height *= scale;
+//     //console.log("tempSprite '" + sNum + "' width: " + tempSprite.width);
+
+//     const gameObj = kontra.Sprite({
+//         x: offX,
+//         y: offY,
+//         //image:genSprite,
+//         image:tempSprite,
+//     });
+
+//     return gameObj;
+// }
 
 function InteractCheck(ltr) {
     //Next dialogue prompt/Interact/Access
@@ -406,14 +444,20 @@ const loop = kontra.GameLoop({
         if(gameState == 0) { //START MENU 
             //kickoff first
             if(!initProcessing && !preSetup) {
+                console.log("Presetup INIT");
                 Loading();
-                prepInterval = setInterval(InitPreLoad, 25);
-                preSetup = true; //presetup running
+                
+                
+                prepInterval = setInterval(PreloadText, 25);
+
+                //prepInterval = setInterval(InitPreLoad, 25);
+                preSetup = true; //presetup running    
+                console.log("Presetup Successful...");
                 //InitPreLoad();
                 //calls all process functions for graphics
                 //stop console or ctx being removed by roller
-                console.log(can);
-                console.log(cx);
+                console.log(canvas);
+                console.log(context);
 
             }
             //presetup complete, initial processing complete
@@ -423,7 +467,7 @@ const loop = kontra.GameLoop({
 
         }else if (gameState == 1) { //GAME [SHIP INTERIOR]
             if(!stateInit) {
-                console.log("Setup state init");
+                console.log("Running initial game-state setup...");
                 InitSetupState();
                 stateInit = true;
                 
@@ -544,12 +588,14 @@ const loop = kontra.GameLoop({
                     sLegR.render();   
 
                     //enabled button                    
-                    cx.beginPath();
-                    cx.rect(280, 10, 40, 40);
-                    cx.fillStyle = "#222222";
-                    cx.fill();
+                    context.beginPath();
+                    context.rect(280, 10, 40, 40);
+                    context.fillStyle = "#222222";
+                    context.fill();
                 }
 
+                tempTest4x4.render();
+                tempTest8x8.render();
 
                 shipReadout.render();
             } else {
@@ -562,15 +608,13 @@ const loop = kontra.GameLoop({
                 GenerateGalacticStructure(context);
                 
                 //enabled button  
-                cx.beginPath();
-                cx.rect(320, 10, 40, 40);
-                cx.fillStyle = "#222222";
-                cx.fill();
+                context.beginPath();
+                context.rect(320, 10, 40, 40);
+                context.fillStyle = "#222222";
+                context.fill();
 
             }
     
-    
-            tempTest.render();
             commandButton.render();
             mapButton.render();
 
